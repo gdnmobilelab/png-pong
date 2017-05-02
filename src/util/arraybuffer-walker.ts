@@ -18,8 +18,12 @@ export class ArrayBufferWalker {
     offset = 0;
     array: Uint8Array;
 
-    constructor(private buffer: ArrayBuffer) {
-        this.array = new Uint8Array(buffer);
+    constructor(private bufferOrLength: ArrayBuffer | number) {
+        if (bufferOrLength instanceof ArrayBuffer) {
+            this.array = new Uint8Array(bufferOrLength);
+        } else {
+            this.array = new Uint8Array(bufferOrLength);
+        }
     }
 
     writeUint32(value, littleEndian = false) {
@@ -85,6 +89,18 @@ export class ArrayBufferWalker {
 
     }
 
+    skip(length) {
+        this.offset += length;
+    }
+
+
+    rewindUint32() {
+        this.offset -= 4;
+    }
+
+    rewindString(length) {
+        this.offset -= length;
+    }
 
     crcStartOffset?: number
     startCRC() {
@@ -108,6 +124,7 @@ export class ArrayBufferWalker {
     }
 
     adlerStartOffset?: number;
+    savedAdlerValue?: number;
     startAdler() {
         if (this.adlerStartOffset) {
             throw new Error("Adler already started")
@@ -115,12 +132,26 @@ export class ArrayBufferWalker {
         this.adlerStartOffset = this.offset;
     }
 
+    pauseAdler() {
+        if (this.adlerStartOffset === undefined) {
+            throw new Error("Adler has not been started, cannot pause");
+        }
+        this.savedAdlerValue = adler32_buf(this.array, this.adlerStartOffset, this.offset - this.adlerStartOffset, this.savedAdlerValue);
+        this.adlerStartOffset = undefined;
+    }
 
     writeAdler() {
-        if (this.adlerStartOffset === undefined) {
+        if (this.adlerStartOffset === undefined && this.savedAdlerValue === undefined) {
             throw new Error("CRC has not been started, cannot write");
         }
-        let adler = adler32_buf(this.array, this.adlerStartOffset, this.offset - this.adlerStartOffset);
+
+        if (this.adlerStartOffset === undefined) {
+            this.writeUint32(this.savedAdlerValue);
+            this.savedAdlerValue = undefined;
+            return;
+        }
+
+        let adler = adler32_buf(this.array, this.adlerStartOffset, this.offset - this.adlerStartOffset, this.savedAdlerValue);
 
         this.adlerStartOffset = undefined;
         this.writeUint32(adler);

@@ -17,6 +17,9 @@ export interface IHDROptions {
     height: number;
     bitDepth: validBitDepth;
     colorType: PNGColorType;
+    compressionMethod: number;
+    filter: number;
+    interface: number;
 }
 
 export function write(walker: ArrayBufferWalker, options: IHDROptions) {
@@ -32,11 +35,42 @@ export function write(walker: ArrayBufferWalker, options: IHDROptions) {
 
     walker.writeUint8(options.bitDepth);
     walker.writeUint8(options.colorType);
-    walker.writeUint8(0); // compression method, always zero
-    walker.writeUint8(0); // filter, we don't use one
-    walker.writeUint8(0); // interface, also always zero
+    walker.writeUint8(options.compressionMethod);
+    walker.writeUint8(options.filter);
+    walker.writeUint8(options.interface);
 
     walker.writeCRC();
+
+}
+
+export function read(walker: ArrayBufferWalker, length: number): IHDROptions {
+
+    if (length !== 13) {
+        throw new Error("IHDR length must always be 13")
+    }
+
+    let width = walker.readUint32();
+    let height = walker.readUint32();
+
+    let bitDepth = walker.readUint8() as validBitDepth;
+    let colorType = walker.readUint8() as PNGColorType;
+    let compressionMethod = walker.readUint8();
+    let filter = walker.readUint8();
+    let pngInterface = walker.readUint8();
+
+    // Don't do anything with this as we can't edit the header
+    let crc = walker.readUint32();
+
+    return {
+        width,
+        height,
+        bitDepth,
+        colorType,
+        compressionMethod,
+        filter,
+        interface: pngInterface
+    };
+
 
 }
 

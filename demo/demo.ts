@@ -1,4 +1,5 @@
 import { PngPongWriter } from '../src/writer';
+import { PngPongTransformer } from '../src/transformer';
 import * as base64 from 'base64-js';
 
 let width = 300;
@@ -28,11 +29,11 @@ for (let i = 0; i < data.length; i = i + 4) {
 }
 
 
-let writer = new PngPongWriter(300, 300, data);
+let writer = new PngPongWriter(300, 300, data, 1);
 console.time("Draw PNG");
 console.profile("PNG draw");
 let buffer = writer.write();
-console.profileEnd("PNG draw");
+(console as any).profileEnd("PNG draw");
 console.timeEnd("Draw PNG");
 console.time("Base64 encode")
 let b64 = base64.fromByteArray(new Uint8Array(buffer));
@@ -40,4 +41,45 @@ console.timeEnd("Base64 encode")
 
 let img = new Image();
 img.src = "data:image/png;base64," + b64;
-document.body.appendChild(img)
+document.body.appendChild(img);
+
+
+let transformer = new PngPongTransformer(buffer);
+
+let colorIndex = -1;
+
+let secondSquare = [125, 175];
+
+transformer.onPalette((palette) => {
+    colorIndex = palette.addColor([0, 0, 255]);
+    console.log('added', colorIndex)
+})
+
+transformer.onData((arr, readOffset, dataOffset, length) => {
+
+    let x = (dataOffset) % width;
+    let y = ((dataOffset) - x) / width;
+
+    if (y < secondSquare[0] || y > secondSquare[1]) {
+        return;
+    }
+
+    let startWritingAt = readOffset + (secondSquare[0] - x);
+    let writeUntil = startWritingAt + (secondSquare[1] - secondSquare[0]);
+
+    for (let i = startWritingAt; i < writeUntil; i++) {
+
+        arr[i] = colorIndex;
+    }
+})
+console.time("Transform PNG");
+let transformed = transformer.transform();
+console.timeEnd("Transform PNG");
+let b642 = base64.fromByteArray(new Uint8Array(transformed));
+
+
+let img2 = new Image();
+img2.src = "data:image/png;base64," + b642;
+document.body.appendChild(img2);
+
+

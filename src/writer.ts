@@ -27,13 +27,13 @@ export class PngPongWriter {
             + IENDLength;
     }
 
-    constructor(private width: number, private height: number, private rgbaData: Uint8ClampedArray) {
+    constructor(private width: number, private height: number, private rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
 
         if (rgbaData.length !== width * height * 4) {
             throw new Error("Insufficient data for the image dimensions specified");
         }
 
-        this.paletteAndData = RGBAtoPalettedArray(this.rgbaData);
+        this.paletteAndData = RGBAtoPalettedArray(this.rgbaData, extraPaletteSpaces);
         this.buffer = new ArrayBuffer(this.calculateBufferLength());
         this.walker = new ArrayBufferWalker(this.buffer);
     }
@@ -45,7 +45,10 @@ export class PngPongWriter {
             width: this.width,
             height: this.height,
             colorType: PNGColorType.Palette,
-            bitDepth: 8
+            bitDepth: 8,
+            compressionMethod: 0,
+            filter: 0,
+            interface: 0
         });
         writePalette(this.walker, this.paletteAndData.rgbPalette, this.paletteAndData.alphaPalette);
         writeIDAT(this.walker, this.paletteAndData.data, this.width)

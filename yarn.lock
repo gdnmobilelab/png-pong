@@ -1928,6 +1928,10 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
+pngjs@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-3.2.0.tgz#fc9fcea1a8a375da54a51148019d5abd41dbabde"
+
 portfinder@^1.0.9:
   version "1.0.13"
   resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.13.tgz#bb32ecd87c27104ae6ee44b5a3ccbf0ebb1aede9"

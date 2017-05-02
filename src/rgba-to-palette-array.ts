@@ -8,10 +8,9 @@ export interface PalettedArray {
 function findRGBA(rgba: Uint8ClampedArray, offset: number, rgbPalette: Uint8ClampedArray, alphaPalette: Uint8ClampedArray) {
 
     for (let i = 3; i < rgbPalette.length; i = i + 3) {
-        // console.log('look for', rgba[offset], rgba[offset + 1], rgba[offset + 2], rgbPalette[i], rgbPalette[i + 1], rgbPalette[1 + 2])
 
         // Because we already shortcut when looking for rgba(0,0,0,0) we know that if we
-        // run into it here it's the end of our current palette. So we can end early.
+        // run into it here it's the end of our current palette. So we can end the loop early.
 
         if (rgbPalette[i] === 0 && rgbPalette[i + 1] === 0 && rgbPalette[i + 2] === 0 && alphaPalette[i / 3] === 0) {
             return -1;
@@ -57,8 +56,6 @@ function findOrAddColor(rgba: Uint8ClampedArray, offset: number, rgbPalette: Uin
 
         }
 
-        console.log('insert at:', vacantIndex / 3, rgba[offset], rgba[offset + 1], rgba[offset + 2], rgba[offset + 3])
-
 
         rgbPalette[vacantIndex] = rgba[offset];
         rgbPalette[vacantIndex + 1] = rgba[offset + 1];
@@ -71,12 +68,12 @@ function findOrAddColor(rgba: Uint8ClampedArray, offset: number, rgbPalette: Uin
 
 }
 
-export function RGBAtoPalettedArray(rgba: Uint8ClampedArray): PalettedArray {
+export function RGBAtoPalettedArray(rgba: Uint8ClampedArray, extraPaletteSpaces: number): PalettedArray {
 
     if (rgba.byteLength % 4 !== 0) {
         throw new Error("This is not divisible by 4, can't be an RGBA array");
     }
-    console.time("Calculate palette");
+
     let data = new Uint8ClampedArray(rgba.byteLength / 4);
     let rgbPalette = new Uint8ClampedArray(255 * 3);
     let alphaPalette = new Uint8ClampedArray(255);
@@ -90,12 +87,11 @@ export function RGBAtoPalettedArray(rgba: Uint8ClampedArray): PalettedArray {
     }
     // maxColor is the index, we want the length, so bump it up by one
     maxColor++;
-    console.timeEnd("Calculate palette");
-    console.info(`Created palette for ${maxColor} colors.`)
+
     return {
         data: data,
-        rgbPalette: rgbPalette.slice(0, maxColor * 3),
-        alphaPalette: alphaPalette.slice(0, maxColor)
+        rgbPalette: rgbPalette.slice(0, maxColor * 3 + (extraPaletteSpaces * 3)),
+        alphaPalette: alphaPalette.slice(0, maxColor + extraPaletteSpaces)
     }
 
 }

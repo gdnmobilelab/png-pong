@@ -1,5 +1,5 @@
 import { ArrayBufferWalker } from '../util/arraybuffer-walker';
-import { calculateZlibbedLength, ZlibWriter } from '../util/zlib';
+import { calculateZlibbedLength, ZlibWriter, readZlib } from '../util/zlib';
 
 export function write(walker: ArrayBufferWalker, data: Uint8ClampedArray, width: number) {
 
@@ -47,5 +47,9 @@ export function calculateLength(width: number, height: number) {
         + 4                                 // Identifier
         + calculateZlibbedLength(bytes)
         + 4                                 // CRC
+
+}
+
+export function read(walker: ArrayBufferWalker, length: number) {
 
 }

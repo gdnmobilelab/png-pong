@@ -1,5 +1,6 @@
 import { ArrayBufferWalker } from './arraybuffer-walker';
 import { adler32_buf } from './adler';
+import { DataCallback } from './data-callback';
 
 export const ZLIB_WINDOW_SIZE = 1024 * 32; // 32KB
 export const BLOCK_SIZE = 65535;
@@ -15,21 +16,27 @@ export function calculateZlibbedLength(dataLength: number) {
         + dataLength;                       // The actual data.
 };
 
+// export function calculateUnZlibbedLength(zlibLength:number) {
+
+//     let numberOfBlocks = Math.ceil(zlibLength / BLOCK_SIZE);
+
+//     return zlibLength
+//         - 1
+//         - 1
+//         - (5 * numberOfBlocks)
+//         - 4;
+// }
+
 
 export class ZlibWriter {
 
     bytesLeftInWindow = 0;
     bytesLeft: number;
-    currentAdler?: number;
-    windowStartOffset: number;
-
-    private writeToUnderlyingWalker: (value: number) => void
 
     constructor(private walker: ArrayBufferWalker, dataLength: number) {
         this.bytesLeft = dataLength;
         this.writeZlibHeader();
         this.startBlock();
-        // this.startAdler();
     }
 
     writeZlibHeader() {
@@ -75,8 +82,8 @@ export class ZlibWriter {
         this.walker.writeUint16(blockLength, true);
         this.walker.writeUint16(nlen, true);
 
-        this.windowStartOffset = this.walker.offset;
         this.bytesLeftInWindow = Math.min(this.bytesLeft, BLOCK_SIZE);
+        this.walker.startAdler();
     }
 
     writeUint8(val: number) {
@@ -86,8 +93,7 @@ export class ZlibWriter {
         }
 
         if (this.bytesLeftInWindow === 0 && this.bytesLeft > 0) {
-
-            this.currentAdler = adler32_buf(this.walker.array, this.windowStartOffset, this.walker.offset - this.windowStartOffset, this.currentAdler);
+            this.walker.pauseAdler();
             this.startBlock();
 
         }
@@ -100,27 +106,37 @@ export class ZlibWriter {
     }
 
     end() {
-        this.currentAdler = adler32_buf(this.walker.array, this.windowStartOffset, this.walker.offset - this.windowStartOffset, this.currentAdler);
-        this.walker.writeUint32(this.currentAdler);
+        this.walker.writeAdler();
+    }
+}
+
+
+export function readZlib(walker: ArrayBufferWalker, dataCallback: DataCallback) {
+
+    // Disregard Zlib header
+    walker.skip(2);
+
+    let bfinal = false;
+    let dataOffset = 0;
+
+    while (bfinal === false) {
+        // Start of first block
+        bfinal = walker.readUint8() === 1;
+
+        let blockLength = walker.readUint16(true);
+        // console.log(`zlib block: ${blockLength} bytes, final: ${bfinal}`)
+        // skip nlen
+        walker.skip(2);
+
+        // data might change during this time, so we recalc the adler
+        walker.startAdler();
+        dataCallback(walker.array, walker.offset, dataOffset, blockLength);
+
+        walker.offset += blockLength;
+        dataOffset += blockLength;
+        walker.pauseAdler();
     }
 
-    // adlerStartOffset?: number;
-    // startAdler() {
-    //     if (this.adlerStartOffset) {
-    //         throw new Error("Adler already started")
-    //     }
-    //     this.adlerStartOffset = this.walker.offset;
-    // }
+    walker.writeAdler();
 
-
-    // writeAdler() {
-    //     if (this.adlerStartOffset === undefined) {
-    //         throw new Error("CRC has not been started, cannot write");
-    //     }
-    //     let adler = adler32_buf(this.walker.array, this.adlerStartOffset, this.walker.offset - this.adlerStartOffset);
-
-    //     this.adlerStartOffset = undefined;
-    //     this.walker.writeUint32(adler);
-
-    // }
 }

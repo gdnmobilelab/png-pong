@@ -6,4 +6,11 @@ export function write(walker: ArrayBufferWalker) {
     walker.writeString(PRE_HEADER);
 }
 
+export function check(walker: ArrayBufferWalker) {
+    let value = walker.readString(PRE_HEADER.length);
+    if (value !== PRE_HEADER) {
+        throw new Error("Buffer does not have a PNG file header.");
+    }
+}
+
 export const length = PRE_HEADER.length;
