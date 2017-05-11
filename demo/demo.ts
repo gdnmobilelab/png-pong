@@ -52,7 +52,6 @@ let secondSquare = [125, 175];
 
 transformer.onPalette((palette) => {
     colorIndex = palette.addColor([0, 0, 255]);
-    console.log('added', colorIndex)
 })
 
 transformer.onData((arr, readOffset, dataOffset, length) => {
