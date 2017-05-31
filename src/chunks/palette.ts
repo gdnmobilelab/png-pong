@@ -29,12 +29,12 @@ export function write(walker: ArrayBufferWalker, rgbPalette: Uint8ClampedArray, 
 
 }
 
-interface OffsetAndLength {
+export interface OffsetAndLength {
     offset: number;
     length: number;
 }
 
-export class PaletteHandler {
+export class Palette {
 
 
     constructor(private walker: ArrayBufferWalker, private rgbPalette: OffsetAndLength, private alphaPalette?: OffsetAndLength) {
@@ -97,6 +97,9 @@ export class PaletteHandler {
 
     addColor(rgba: number[]) {
 
+        // need to save this to reset later.
+        let currentWalkerOffset = this.walker.offset;
+
         this.checkColor(rgba);
 
         // We start at index 1 because the PNGWriter stores 0,0,0,0 at palette index #0
@@ -124,8 +127,11 @@ export class PaletteHandler {
         if (this.alphaPalette) {
             this.walker.offset = this.alphaPalette.offset + vacantSpace;
             this.walker.writeUint8(rgba[3]);
+        } else if (!this.alphaPalette && rgba[3] !== 255) {
+            throw new Error("No alpha palette but color has alpha value.")
         }
 
+        this.walker.offset = currentWalkerOffset;
         return vacantSpace;
     }
 
@@ -151,13 +157,13 @@ export function read(walker: ArrayBufferWalker, length: number) {
         walker.rewindString(4);
         walker.rewindUint32();
 
-        return new PaletteHandler(walker, rgbPaletteBounds);
+        return new Palette(walker, rgbPaletteBounds);
     } else {
 
         let alphaPalette = { offset: walker.offset, length: nextBlockLength };
         walker.skip(nextBlockLength);
 
-        return new PaletteHandler(walker, rgbPaletteBounds, alphaPalette);
+        return new Palette(walker, rgbPaletteBounds, alphaPalette);
     }
 
 }

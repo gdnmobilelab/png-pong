@@ -1,26 +1,26 @@
 import { ArrayBufferWalker } from './util/arraybuffer-walker';
 import { check as checkPreheader } from './chunks/pre-header';
 import { read as readIHDR, IHDROptions } from './chunks/ihdr';
-import { read as readPalette, PaletteHandler } from './chunks/palette';
+import { read as readPalette, Palette } from './chunks/palette';
 import { DataCallback } from './util/data-callback';
 import { readZlib } from './util/zlib';
 
-class EventPayloads {
+export class EventPayloads {
     header: IHDROptions
-    palette: PaletteHandler
+    palette: Palette
     data: DataCallback
 };
 
-type Callback<T> = (arg: T) => void;
+export type Callback<T> = (arg: T) => void;
 
-type EventCallback<K extends keyof EventPayloads> = (arg: EventPayloads[K]) => void
+export type EventCallback<K extends keyof EventPayloads> = (arg: EventPayloads[K]) => void
 
 export class PngPongTransformer {
 
     walker: ArrayBufferWalker;
 
     headerListeners: Callback<IHDROptions>[] = [];
-    paletteListeners: Callback<PaletteHandler>[] = [];
+    paletteListeners: Callback<Palette>[] = [];
     dataListeners: DataCallback[] = [];
 
     // height:number;
@@ -128,7 +128,7 @@ export class PngPongTransformer {
         this.headerListeners.push(listener);
     }
 
-    onPalette(listener: Callback<PaletteHandler>) {
+    onPalette(listener: Callback<Palette>) {
         this.paletteListeners.push(listener)
     }
 

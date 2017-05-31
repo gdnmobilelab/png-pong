@@ -2,7 +2,7 @@ import { ArrayBufferWalker } from '../util/arraybuffer-walker';
 
 // http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html#C.IHDR
 
-type validBitDepth = 1 | 2 | 4 | 8 | 16;
+export type validBitDepth = 1 | 2 | 4 | 8 | 16;
 
 export enum PNGColorType {
     Grayscale = 0,

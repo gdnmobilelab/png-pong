@@ -1,7 +1,8 @@
 {
   "name": "png-pong",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "license": "MIT",
   "devDependencies": {
     "@types/expect": "^1.20.1",
