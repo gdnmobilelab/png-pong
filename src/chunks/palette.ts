@@ -68,6 +68,24 @@ export class Palette {
         }
     }
 
+    getColorAtIndex(idx: number) {
+
+        let rgbStartingIndex = idx * 3;
+
+        let rgba = [
+            this.walker.array[this.rgbPalette.offset + rgbStartingIndex],
+            this.walker.array[this.rgbPalette.offset + rgbStartingIndex + 1],
+            this.walker.array[this.rgbPalette.offset + rgbStartingIndex + 2],
+            255
+        ];
+
+        if (this.alphaPalette) {
+            rgba[3] = this.walker.array[this.alphaPalette.offset + idx];
+        }
+
+        return rgba;
+    }
+
     getColorIndex(rgba: number[], startingIndex: number = 0) {
 
         this.checkColor(rgba);

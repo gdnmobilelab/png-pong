@@ -110,8 +110,9 @@ export class ZlibWriter {
     }
 }
 
+export type ZlibReadCallback = (array: Uint8Array, readOffset: number, dataOffset: number, length: number) => void;
 
-export function readZlib(walker: ArrayBufferWalker, dataCallback: DataCallback) {
+export function readZlib(walker: ArrayBufferWalker, dataCallback: ZlibReadCallback) {
 
     // Disregard Zlib header
     walker.skip(2);

@@ -40,8 +40,7 @@ export class PngPongTransformer {
         this.walker.skip(4);
 
         readZlib(this.walker, (arr, readOffset, dataOffset, length) => {
-            let x = dataOffset % this.width;
-            let y = (dataOffset - x) / this.width;
+
             // console.log(`x:${x}, y:${y}, ${length}`)
 
             // The PNG stream has a row filter flag at the start of every row
@@ -58,7 +57,10 @@ export class PngPongTransformer {
 
                 let individualLength = Math.min(this.width, length - dataSent);
 
-                this.dataListeners.forEach((d) => d(this.walker.array, individualReadOffset, individualDataOffset, individualLength));
+                let x = individualDataOffset % this.width;
+                let y = (individualDataOffset - x) / this.width;
+
+                this.dataListeners.forEach((d) => d(this.walker.array, individualReadOffset, x, y, individualLength));
 
                 // console.log('row filter?', this.walker.array.slice(individualReadOffset - 1, individualReadOffset + individualLength).join(","))
                 // console.log(individualDataOffset, individualLength, this.walker.array[individualReadOffset])
