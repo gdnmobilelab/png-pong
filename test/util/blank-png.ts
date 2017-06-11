@@ -1,4 +1,4 @@
-import { PngPongWriter } from '../../src/writer';
+import { createFromRGBArray } from '../../src/writer';
 
 export function createBlankPNG(width: number, height: number, backgroundColor: number[], extraPaletteSpaces: number = 0) {
 
@@ -14,7 +14,5 @@ export function createBlankPNG(width: number, height: number, backgroundColor: n
         sourceArray.set(bgColors, i);
     }
 
-    let writer = new PngPongWriter(width, height, sourceArray, extraPaletteSpaces);
-
-    return writer.write();
+    return createFromRGBArray(width, height, sourceArray, extraPaletteSpaces);
 }

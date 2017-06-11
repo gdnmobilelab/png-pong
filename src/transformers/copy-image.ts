@@ -8,6 +8,32 @@ interface CopyOperation {
     targetX: number;
     targetY: number;
     pixels: Uint8Array;
+    mask?: ColorMaskOptions;
+}
+
+export interface ColorMaskOptions {
+    maskColor: RGBColor;
+    backgroundColor: RGBColor;
+}
+
+export type RGBColor = [number, number, number];
+
+function alphaBlend(color1: RGBColor, color2: RGBColor, alpha: number) {
+
+    let alphaMultiply = alpha / 255;
+
+    let redDiff = color1[0] - color2[0];
+    let greenDiff = color1[1] - color2[1];
+    let blueDiff = color1[2] - color2[2];
+
+    let newColor = [
+        color1[0] - Math.round(redDiff * alphaMultiply),
+        color1[1] - Math.round(greenDiff * alphaMultiply),
+        color1[2] - Math.round(blueDiff * alphaMultiply)
+    ]
+
+    return newColor
+
 }
 
 export class PngPongImageCopier {
@@ -20,7 +46,7 @@ export class PngPongImageCopier {
     }
 
 
-    copy(sourceX: number, sourceY: number, sourceWidth: number, sourceHeight: number, targetX: number, targetY: number) {
+    copy(sourceX: number, sourceY: number, sourceWidth: number, sourceHeight: number, targetX: number, targetY: number, mask?: ColorMaskOptions) {
 
         let pixelsRequired = sourceWidth * sourceHeight;
 
@@ -33,7 +59,8 @@ export class PngPongImageCopier {
             sourceHeight,
             targetX,
             targetY,
-            pixels
+            pixels,
+            mask
         });
     }
 
@@ -62,6 +89,17 @@ export class PngPongImageCopier {
                     let relativeY = y - operation.sourceY;
 
                     let sourcePixel = sourcePalette.getColorAtIndex(array[readOffset + i]);
+
+                    if (operation.mask) {
+
+                        let maskColor = alphaBlend(operation.mask.backgroundColor, operation.mask.maskColor, sourcePixel[3])
+
+
+                        sourcePixel[0] = maskColor[0];
+                        sourcePixel[1] = maskColor[1];
+                        sourcePixel[2] = maskColor[2];
+                    }
+
 
                     let targetPaletteIndex = targetPalette.getColorIndex(sourcePixel);
 

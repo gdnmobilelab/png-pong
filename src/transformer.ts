@@ -39,36 +39,49 @@ export class PngPongTransformer {
         this.walker.startCRC();
         this.walker.skip(4);
 
-        readZlib(this.walker, (arr, readOffset, dataOffset, length) => {
+        let rowFilterBytesSkipped = 1;
 
-            // console.log(`x:${x}, y:${y}, ${length}`)
+        // Our PNG rows can be split across chunks, so we need to track
+        // overall data length
+        let dataReadSoFar = 0;
+
+        readZlib(this.walker, (arr, readOffset, dataOffset, length) => {
 
             // The PNG stream has a row filter flag at the start of every row
             // which we want to disregard and not send to any listeners. So
             // we split up the data as we receive it into chunks, around that
             // flag.
 
-            let dataSent = 1;
-            let rowFilterBytesSkipped = 1;
-            while (dataSent < length) {
+            // ignore our first row flag
+            let blockReadOffset = 0;
 
-                let individualReadOffset = readOffset + dataSent;
-                let individualDataOffset = dataOffset + dataSent - rowFilterBytesSkipped;
+            while (blockReadOffset < length) {
 
-                let individualLength = Math.min(this.width, length - dataSent);
+                // In order to match rows across blocks and also ignore row flags,
+                // we need to keep track of our current coordinate.
+                let xAtThisPoint = dataReadSoFar % this.width;
 
-                let x = individualDataOffset % this.width;
-                let y = (individualDataOffset - x) / this.width;
+                if (blockReadOffset === 0 && xAtThisPoint === 0) {
+                    // If we're starting a new block AND it's the start of a row,
+                    // we need to skip our row filter byte
+                    blockReadOffset++;
+                }
 
-                this.dataListeners.forEach((d) => d(this.walker.array, individualReadOffset, x, y, individualLength));
+                let yAtThisPoint = (dataReadSoFar - xAtThisPoint) / this.width;
 
-                // console.log('row filter?', this.walker.array.slice(individualReadOffset - 1, individualReadOffset + individualLength).join(","))
-                // console.log(individualDataOffset, individualLength, this.walker.array[individualReadOffset])
-                // // this.dataListeners.forEach((l) => l)
-                dataSent += individualLength;
+                // If we have an entire image row we can read, do that. If we have a partial
+                // row, do that. If we have the end of a block, do that.
+                let amountToRead = Math.min(this.width - xAtThisPoint, length - blockReadOffset);
 
-                dataSent += 1;
-                rowFilterBytesSkipped++;
+                this.dataListeners.forEach((d) => d(this.walker.array, readOffset + blockReadOffset, xAtThisPoint, yAtThisPoint, amountToRead));
+
+                // update our offsets to match the pixel amounts we just read
+                dataReadSoFar += amountToRead;
+                blockReadOffset += amountToRead;
+
+                // now ALSO update our block offset to skip the next row filter byte
+                blockReadOffset++;
+
             }
 
         });

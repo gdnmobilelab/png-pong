@@ -2,59 +2,93 @@ import { write as writePreheader, length as PreheaderLength } from './chunks/pre
 import { write as writeIHDR, length as IHDRLength, PNGColorType } from './chunks/ihdr';
 import { write as writePalette, calculateLength as calculatePaletteLength } from './chunks/palette';
 import { write as writeIEND, length as IENDLength } from './chunks/iend';
-import { write as writeIDAT, calculateLength as calculateIDATLength } from './chunks/idat';
-
+import { write as writeIDAT, calculateLength as calculateIDATLength, writeConstant as writeIDATConstant } from './chunks/idat';
+import { RGB } from './util/color-types';
 import { ArrayBufferWalker } from './util/arraybuffer-walker';
 
 import { RGBAtoPalettedArray, PalettedArray } from './rgba-to-palette-array';
 
-export class PngPongWriter {
+function calculateBufferLength(width: number, height: number, numColors: number) {
 
-    buffer: ArrayBuffer;
-    walker: ArrayBufferWalker;
-    paletteAndData: PalettedArray;
+    // Before we write anything we need to work out the size of ArrayBuffer
+    // we need. This is a combination of a whole load of factors, so we
+    // separate out the logic into different chunks.
 
-    calculateBufferLength() {
+    return PreheaderLength
+        + IHDRLength
+        + calculatePaletteLength(numColors)
+        + calculateIDATLength(width, height)
+        + IENDLength;
+}
 
-        // Before we write anything we need to work out the size of ArrayBuffer
-        // we need. This is a combination of a whole load of factors, so we
-        // separate out the logic into different chunks.
 
-        return PreheaderLength
-            + IHDRLength
-            + calculatePaletteLength(this.paletteAndData.alphaPalette.length)
-            + calculateIDATLength(this.width, this.height)
-            + IENDLength;
+export function createFromRGBArray(width: number, height: number, rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
+
+    let { rgbPalette, alphaPalette, data } = RGBAtoPalettedArray(rgbaData, extraPaletteSpaces);
+
+    let arrayBufferLength = calculateBufferLength(width, height, alphaPalette.length + extraPaletteSpaces);
+
+    let buffer = new ArrayBuffer(arrayBufferLength);
+    let walker = new ArrayBufferWalker(buffer);
+
+    writePreheader(walker);
+    writeIHDR(walker, {
+        width: width,
+        height: height,
+        colorType: PNGColorType.Palette,
+        bitDepth: 8,
+        compressionMethod: 0,
+        filter: 0,
+        interface: 0
+    });
+    writePalette(walker, rgbPalette, alphaPalette);
+    writeIDAT(walker, data, width)
+    writeIEND(walker);
+
+    return buffer;
+}
+
+export function createWithMetadata(width: number, height: number, paletteSize: number, backgroundColor?: RGB) {
+
+    let length = calculateBufferLength(width, height, paletteSize);
+
+    let buffer = new ArrayBuffer(length);
+    let walker = new ArrayBufferWalker(buffer);
+
+    writePreheader(walker);
+    writeIHDR(walker, {
+        width: width,
+        height: height,
+        colorType: PNGColorType.Palette,
+        bitDepth: 8,
+        compressionMethod: 0,
+        filter: 0,
+        interface: 0
+    });
+
+    let rgbColors = new Uint8ClampedArray(paletteSize * 3);
+    let alphaValues = new Uint8ClampedArray(paletteSize);
+
+    if (backgroundColor) {
+        rgbColors[3] = backgroundColor[0];
+        rgbColors[4] = backgroundColor[1];
+        rgbColors[5] = backgroundColor[2];
+        alphaValues[1] = 255;
     }
 
-    constructor(private width: number, private height: number, private rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
+    writePalette(walker, rgbColors, alphaValues);
 
-        if (rgbaData.length !== width * height * 4) {
-            throw new Error("Insufficient data for the image dimensions specified");
-        }
+    if (backgroundColor) {
+        // The background color will be palette entry #1, as RGBA(0,0,0,0) is
+        // always entry #0
+        writeIDATConstant(walker, 1, width, height);
 
-        this.paletteAndData = RGBAtoPalettedArray(this.rgbaData, extraPaletteSpaces);
-        this.buffer = new ArrayBuffer(this.calculateBufferLength());
-        this.walker = new ArrayBufferWalker(this.buffer);
+    } else {
+        writeIDATConstant(walker, 0, width, height);
     }
 
-    write() {
+    writeIEND(walker);
 
-        writePreheader(this.walker);
-        writeIHDR(this.walker, {
-            width: this.width,
-            height: this.height,
-            colorType: PNGColorType.Palette,
-            bitDepth: 8,
-            compressionMethod: 0,
-            filter: 0,
-            interface: 0
-        });
-        writePalette(this.walker, this.paletteAndData.rgbPalette, this.paletteAndData.alphaPalette);
-        writeIDAT(this.walker, this.paletteAndData.data, this.width)
-        writeIEND(this.walker);
-
-        return this.buffer;
-    }
+    return buffer;
 
 }

@@ -43,7 +43,6 @@ function findOrAddColor(rgba: Uint8ClampedArray, offset: number, rgbPalette: Uin
         return rgbIndex;
 
     } else {
-
         // The colour is not yet in the palette. So we go through the palette array until we find
         // one (that isn't at index zero) that matches rgba(0,0,0,0). 
         let vacantIndex = 3;

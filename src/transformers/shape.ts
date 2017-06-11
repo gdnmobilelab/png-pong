@@ -13,9 +13,13 @@ export class PngPongShapeTransformer {
 
     private operations: RectangleDraw[] = [];
     private operationPaletteIndexes: number[] = [];
+    private imageWidth: number;
 
     constructor(private baseTransformer: PngPongTransformer) {
 
+        baseTransformer.onHeader((h) => {
+            this.imageWidth = h.width;
+        })
         baseTransformer.onPalette(this.onPalette.bind(this));
         baseTransformer.onData(this.onData.bind(this));
 
@@ -38,19 +42,15 @@ export class PngPongShapeTransformer {
 
     private onData(array: Uint8Array, readOffset: number, x: number, y: number, length: number) {
 
-        for (let i = 0; i < length; i++) {
-            this.operations.forEach((o, idx) => {
+        for (let idx = 0; idx < this.operations.length; idx++) {
+            let o = this.operations[idx];
+            if (y < o.y1 || y >= o.y2) {
+                continue;
+            }
 
-                if (x < o.x1 || x >= o.x2 || y < o.y1 || y >= o.y2) {
-                    return;
-                }
-
-                array[readOffset + i] = this.operationPaletteIndexes[idx];
-
-            })
-
-            x++;
-
+            for (let i = Math.max(x, o.x1); i < Math.min(o.x2, x + length); i++) {
+                array[readOffset - x + i] = this.operationPaletteIndexes[idx];
+            }
         }
 
     }

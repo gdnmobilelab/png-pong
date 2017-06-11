@@ -15,7 +15,6 @@ export function write(walker: ArrayBufferWalker, data: Uint8ClampedArray, width:
     let zlibWriter = new ZlibWriter(walker, data.length + height);
 
     let currentX = 0;
-    let currentWindowLength = 0;
 
     // Write our row filter byte
     zlibWriter.writeUint8(0)
@@ -38,6 +37,39 @@ export function write(walker: ArrayBufferWalker, data: Uint8ClampedArray, width:
 
 }
 
+export function writeConstant(walker: ArrayBufferWalker, value: number, width: number, height: number) {
+
+    let overallSize = (width + 1) * height; // +1 for row filter byte
+
+    walker.writeUint32(calculateZlibbedLength(overallSize));
+
+    walker.startCRC();
+    walker.writeString("IDAT");
+
+    let zlibWriter = new ZlibWriter(walker, overallSize);
+
+    let currentX = 0;
+
+    // Write our row filter byte
+    zlibWriter.writeUint8(0)
+
+    for (var i = 0; i < width * height; i++) {
+
+        if (currentX === width) {
+            currentX = 0;
+            // Write our row filter byte
+            zlibWriter.writeUint8(0);
+        }
+
+        zlibWriter.writeUint8(value);
+        currentX++;
+
+    }
+
+    zlibWriter.end();
+    walker.writeCRC();
+
+}
 export function calculateLength(width: number, height: number) {
 
     // PNG has a row filter byte at the start of each row
