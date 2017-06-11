@@ -1,7 +1,7 @@
-import { ArrayBufferWalker } from '../src/util/arraybuffer-walker';
+import { ArrayBufferWalker } from '../../src/util/arraybuffer-walker';
 import * as expect from 'expect';
-import { crc32 } from '../src/util/crc';
-import { adler32_buf } from '../src/util/adler'
+import { crc32 } from '../../src/util/crc';
+import { adler32_buf } from '../../src/util/adler'
 
 describe("Bit Operations", () => {
     it("should write and read uint32 big-endian", () => {

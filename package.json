@@ -10,11 +10,13 @@
     "@types/node": "^7.0.14",
     "adler32": "^0.1.7",
     "base64-js": "^1.2.0",
+    "css-loader": "^0.28.4",
     "expect": "^1.20.2",
     "html-webpack-plugin": "^2.28.0",
     "mocha": "^3.3.0",
     "mocha-typescript": "^1.1.0",
     "pngjs": "^3.2.0",
+    "style-loader": "^0.18.2",
     "ts-loader": "^2.0.3",
     "typescript": "^2.3.1",
     "webpack": "^2.4.1",
@@ -22,6 +24,10 @@
   },
   "scripts": {
     "tests-node": "mocha-typescript-watch -o mocha.opts",
-    "demo": "webpack-dev-server './demo/demo.ts' --module-bind ts=ts-loader --output-filename test.js --plugin html-webpack-plugin --resolve-extensions '.js,.ts,.json' --no-inline --devtool source-map"
+    "tests-web": "webpack-dev-server './test/load-all-tests.js' --module-bind css=style-loader!css-loader --module-bind ts=ts-loader --output-filename tests.js --plugin html-webpack-plugin --resolve-extensions '.js,.ts,.json' --no-inline --devtool source-map",
+    "demo": "webpack-dev-server './demo/demo.ts' --module-bind ts=ts-loader --output-filename demo.js --plugin html-webpack-plugin --resolve-extensions '.js,.ts,.json' --no-inline --devtool source-map"
+  },
+  "dependencies": {
+    "mocha-loader": "^1.1.1"
   }
 }

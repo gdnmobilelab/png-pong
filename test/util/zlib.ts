@@ -1,11 +1,12 @@
 import * as zlib from 'zlib';
 import * as fs from 'fs';
-import { ZlibWriter, calculateZlibbedLength, readZlib } from '../src/util/zlib';
-import { ArrayBufferWalker } from '../src/util/arraybuffer-walker';
+import { ZlibWriter, calculateZlibbedLength, readZlib } from '../../src/util/zlib';
+import { ArrayBufferWalker } from '../../src/util/arraybuffer-walker';
 import * as expect from 'expect';
+import { nodeOnly } from '../test-util/node-only';
 
 describe("Zlib writer", () => {
-    it("Should output a buffer readable by the Node ZLib library", () => {
+    nodeOnly("Should output a buffer readable by the Node ZLib library", () => {
 
         let length = 120000;
 
@@ -31,7 +32,7 @@ describe("Zlib writer", () => {
 
     })
 
-    it("Read same size as written", () => {
+    nodeOnly("Read same size as written", () => {
 
         let length = 120000;
 

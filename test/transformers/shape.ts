@@ -1,12 +1,12 @@
 import { PngPongTransformer, PngPongShapeTransformer } from '../../src';
-import { createBlankPNG } from '../util/blank-png';
+import { createWithMetadata } from '../../src/writer';
 import { PNG } from 'pngjs';
 import * as expect from 'expect';
 
 describe("Shape transformer", () => {
-    it.only("should draw a rectangle", (done) => {
+    it("should draw a rectangle", (done) => {
 
-        let png = createBlankPNG(400, 200, [255, 255, 255, 255], 1);
+        let png = createWithMetadata(400, 200, 3, [255, 255, 255, 255]);
 
         let transformer = new PngPongTransformer(png);
 
@@ -19,8 +19,8 @@ describe("Shape transformer", () => {
         let arr = new Uint8Array(png);
         let buff = new Buffer(arr);
 
-        let b = new Buffer(new Uint8Array(png));
-        require('fs').writeFileSync('/tmp/shape-out.png', b);
+        // let b = new Buffer(new Uint8Array(png));
+        // require('fs').writeFileSync('/tmp/shape-out.png', b);
 
 
         new PNG({ filterType: 4 }).parse(buff, (err, png) => {

@@ -3,7 +3,7 @@ import { write as writeIHDR, length as IHDRLength, PNGColorType } from './chunks
 import { write as writePalette, calculateLength as calculatePaletteLength } from './chunks/palette';
 import { write as writeIEND, length as IENDLength } from './chunks/iend';
 import { write as writeIDAT, calculateLength as calculateIDATLength, writeConstant as writeIDATConstant } from './chunks/idat';
-import { RGB } from './util/color-types';
+import { RGB, RGBA } from './util/color-types';
 import { ArrayBufferWalker } from './util/arraybuffer-walker';
 
 import { RGBAtoPalettedArray, PalettedArray } from './rgba-to-palette-array';
@@ -48,7 +48,11 @@ export function createFromRGBArray(width: number, height: number, rgbaData: Uint
     return buffer;
 }
 
-export function createWithMetadata(width: number, height: number, paletteSize: number, backgroundColor?: RGB) {
+export function createWithMetadata(width: number, height: number, paletteSize: number, backgroundColor?: RGBA | RGB) {
+
+    if (backgroundColor && paletteSize <= 1) {
+        throw new Error("If specifying a background colour, palette must be greater than 1 entry big (#0 is always rgba(0,0,0,0))")
+    }
 
     let length = calculateBufferLength(width, height, paletteSize);
 
@@ -73,8 +77,14 @@ export function createWithMetadata(width: number, height: number, paletteSize: n
         rgbColors[3] = backgroundColor[0];
         rgbColors[4] = backgroundColor[1];
         rgbColors[5] = backgroundColor[2];
-        alphaValues[1] = 255;
+
+        if (backgroundColor.length === 3) {
+            alphaValues[1] = 255;
+        } else {
+            alphaValues[1] = backgroundColor[3];
+        }
     }
+
 
     writePalette(walker, rgbColors, alphaValues);
 

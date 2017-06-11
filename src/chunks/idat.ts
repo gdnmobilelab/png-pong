@@ -4,15 +4,15 @@ import { calculateZlibbedLength, ZlibWriter, readZlib } from '../util/zlib';
 export function write(walker: ArrayBufferWalker, data: Uint8ClampedArray, width: number) {
 
     // We need to account for a row filter pixel in our chunk length
-    let height = data.length / width;
+    let numOfRowFilterBytes = data.length / width;
 
     // Zlibbed data will take up more space than the raw data
-    walker.writeUint32(calculateZlibbedLength(data.length + height));
+    walker.writeUint32(calculateZlibbedLength(data.length + numOfRowFilterBytes));
 
     walker.startCRC();
     walker.writeString("IDAT");
 
-    let zlibWriter = new ZlibWriter(walker, data.length + height);
+    let zlibWriter = new ZlibWriter(walker, data.length + numOfRowFilterBytes);
 
     let currentX = 0;
 

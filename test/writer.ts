@@ -1,7 +1,8 @@
 import { createFromRGBArray, createWithMetadata } from '../src/writer';
+import { nodeOnly } from './test-util/node-only';
 
 describe("PNG Writer", () => {
-    it("Should write a valid PNG file from RGBA array", (done) => {
+    nodeOnly("Should write a valid PNG file from RGBA array", (done) => {
 
         let rgbaArray = new Uint8ClampedArray(300 * 200 * 4);
 
@@ -26,7 +27,7 @@ describe("PNG Writer", () => {
         });
     })
 
-    it("Should write a valid PNG file from metadata", (done) => {
+    nodeOnly("Should write a valid PNG file from metadata", (done) => {
 
 
 

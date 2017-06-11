@@ -1,5 +1,5 @@
 import { PngPongTransformer } from '../src/transformer';
-import { createBlankPNG } from './util/blank-png';
+import { createWithMetadata } from '../src/writer';
 import { PNGColorType } from '../src/chunks/ihdr';
 import * as expect from 'expect';
 import { PNG } from 'pngjs';
@@ -7,7 +7,7 @@ import { PNG } from 'pngjs';
 describe("PNG Transformer", () => {
     it("should successfully parse a PNG header", (done) => {
 
-        let source = createBlankPNG(200, 200, [255, 0, 0]);
+        let source = createWithMetadata(200, 200, 2, [255, 0, 0]);
 
         let transformer = new PngPongTransformer(source);
 
@@ -24,7 +24,7 @@ describe("PNG Transformer", () => {
     });
     it("should successfully parse a PNG palette", (done) => {
 
-        let source = createBlankPNG(200, 200, [255, 0, 0, 100]);
+        let source = createWithMetadata(200, 200, 2, [255, 0, 0, 100]);
 
         let transformer = new PngPongTransformer(source);
 
@@ -40,7 +40,7 @@ describe("PNG Transformer", () => {
 
     it("should successfully write to a PNG palette", (done) => {
 
-        let source = createBlankPNG(200, 200, [255, 0, 0, 100], 1);
+        let source = createWithMetadata(200, 200, 3, [255, 0, 0, 100]);
 
         let transformer = new PngPongTransformer(source);
 
@@ -59,7 +59,7 @@ describe("PNG Transformer", () => {
 
     it("should emit data events", (done) => {
 
-        let source = createBlankPNG(200, 200, [255, 0, 0, 100]);
+        let source = createWithMetadata(200, 200, 2, [255, 0, 0, 100]);
 
         let transformer = new PngPongTransformer(source);
 
@@ -77,7 +77,7 @@ describe("PNG Transformer", () => {
 
     it("should transform an image and the PNG still be valid", (done) => {
 
-        let source = createBlankPNG(20, 20, [255, 0, 0], 1);
+        let source = createWithMetadata(20, 20, 3, [255, 0, 0]);
 
         let transformer = new PngPongTransformer(source);
 
