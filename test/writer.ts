@@ -1,4 +1,4 @@
-import { createFromRGBArray, createWithMetadata } from '../src/writer';
+import { createFromRGBAArray, createWithMetadata } from '../src/writer';
 
 describe("PNG Writer", () => {
     it("Should write a valid PNG file from RGBA array", (done) => {
@@ -10,7 +10,7 @@ describe("PNG Writer", () => {
             rgbaArray[i + 3] = 100;
         }
 
-        let buffer = createFromRGBArray(300, 200, rgbaArray);
+        let buffer = createFromRGBAArray(300, 200, rgbaArray);
         let nodeBuffer = new Buffer(new Uint8Array(buffer));
         const fs = require('fs');
         const exec = require('child_process').exec;

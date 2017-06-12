@@ -1,4 +1,4 @@
-import { createFromRGBArray } from '../../src/writer';
+import { createFromRGBAArray } from '../../src/writer';
 
 export function createBlankPNG(width: number, height: number, backgroundColor: number[], extraPaletteSpaces: number = 0) {
 
@@ -14,5 +14,5 @@ export function createBlankPNG(width: number, height: number, backgroundColor: n
         sourceArray.set(bgColors, i);
     }
 
-    return createFromRGBArray(width, height, sourceArray, extraPaletteSpaces);
+    return createFromRGBAArray(width, height, sourceArray, extraPaletteSpaces);
 }

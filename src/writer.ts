@@ -33,7 +33,7 @@ function calculateBufferLength(width: number, height: number, numColors: number)
  * @param {number} extraPaletteSpaces - How many extra palette entries should we make available for new colors, after we've added the colors from the existing array?
  * @returns 
  */
-export function createFromRGBArray(width: number, height: number, rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
+export function createFromRGBAArray(width: number, height: number, rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
 
     let { rgbPalette, alphaPalette, data } = RGBAtoPalettedArray(rgbaData, extraPaletteSpaces);
 
