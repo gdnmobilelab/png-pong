@@ -9,12 +9,26 @@ interface RectangleDraw {
     color: RGB;
 }
 
+
+/**
+ * A transformer to draw basic shapes onto an image. Currently only draws rectangles.
+ * 
+ * @export
+ * @class PngPongShapeTransformer
+ */
 export class PngPongShapeTransformer {
 
     private operations: RectangleDraw[] = [];
     private operationPaletteIndexes: number[] = [];
     private imageWidth: number;
 
+
+    /**
+     * Creates an instance of PngPongShapeTransformer.
+     * @param {PngPong} baseTransformer - the transformer you want to draw onto.
+     * 
+     * @memberof PngPongShapeTransformer
+     */
     constructor(private baseTransformer: PngPong) {
 
         baseTransformer.onHeader((h) => {
@@ -56,6 +70,17 @@ export class PngPongShapeTransformer {
     }
 
 
+    /**
+     * Add a rectangle to the list of draw operations. Must use this before running PngPong.run()
+     * 
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} width 
+     * @param {number} height 
+     * @param {RGB} color 
+     * 
+     * @memberof PngPongShapeTransformer
+     */
     drawRect(x: number, y: number, width: number, height: number, color: RGB) {
 
         let x2 = x + width;

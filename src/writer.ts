@@ -1,8 +1,8 @@
-import { write as writePreheader, length as PreheaderLength } from './chunks/pre-header';
-import { write as writeIHDR, length as IHDRLength, PNGColorType } from './chunks/ihdr';
-import { write as writePalette, calculateLength as calculatePaletteLength } from './chunks/palette';
-import { write as writeIEND, length as IENDLength } from './chunks/iend';
-import { write as writeIDAT, calculateLength as calculateIDATLength, writeConstant as writeIDATConstant } from './chunks/idat';
+import { writePreheader as writePreheader, length as PreheaderLength } from './chunks/pre-header';
+import { writeIHDR as writeIHDR, IHDRLength as IHDRLength, PNGColorType } from './chunks/ihdr';
+import { writePalette as writePalette, calculatePaletteLength as calculatePaletteLength } from './chunks/palette';
+import { writeIEND as writeIEND, length as IENDLength } from './chunks/iend';
+import { writeIDAT as writeIDAT, calculateIDATLength as calculateIDATLength, writeIDATConstant as writeIDATConstant } from './chunks/idat';
 import { RGB } from './util/color-types';
 import { ArrayBufferWalker } from './util/arraybuffer-walker';
 
@@ -22,6 +22,17 @@ function calculateBufferLength(width: number, height: number, numColors: number)
 }
 
 
+/**
+ * Create a PngPong-suitable PNG ArrayBuffer from an existing RGBA array. Combine
+ * this with PNGJS to transform an existing PNG image into something PngPong can use.
+ * 
+ * @export
+ * @param {number} width 
+ * @param {number} height 
+ * @param {Uint8ClampedArray} rgbaData 
+ * @param {number} extraPaletteSpaces - How many extra palette entries should we make available for new colors, after we've added the colors from the existing array?
+ * @returns 
+ */
 export function createFromRGBArray(width: number, height: number, rgbaData: Uint8ClampedArray, extraPaletteSpaces: number = 0) {
 
     let { rgbPalette, alphaPalette, data } = RGBAtoPalettedArray(rgbaData, extraPaletteSpaces);
@@ -48,6 +59,17 @@ export function createFromRGBArray(width: number, height: number, rgbaData: Uint
     return buffer;
 }
 
+
+/**
+ * Create a PngPong-suitable ArrayBuffer based on the arguments provided.
+ * 
+ * @export
+ * @param {number} width 
+ * @param {number} height 
+ * @param {number} paletteSize - Must be at least 1, and at least 2 if specifying a background color.
+ * @param {RGB} [backgroundColor] 
+ * @returns 
+ */
 export function createWithMetadata(width: number, height: number, paletteSize: number, backgroundColor?: RGB) {
 
     let length = calculateBufferLength(width, height, paletteSize);

@@ -1,0 +1,352 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>png-pong</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">png-pong</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> png-pong</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="pngpong">PngPong</h1>
+				<p>An image manipulation library with a very specific set of skills.</p>
+				<h2 id="what-is-it-">What is it?</h2>
+				<p>PngPong is a very, very basic replacement for the <code>&lt;canvas&gt;</code> tag in elements
+					that do not support it - primarily, service workers. Instead, it manually
+					manipulates the bytes of a PNG file to copy the contents of another image, or
+				draw basic shapes (currently only rectangles).</p>
+				<p>This leads to a <em>lot</em> of restrictions. Although PngPong does use PNG files, it
+				requires that they be a very specific kind of PNG file:</p>
+				<ul>
+					<li>Indexed-color type (<a href="https://www.w3.org/TR/PNG/#6Colour-values">type 3</a>) with an optional tRNS chunk for alpha transparency</li>
+					<li>Compressed at ZLib compression level 0 (i.e. not actually compressed at all)</li>
+				</ul>
+				<p>To ensure your users don&#39;t incur a massive bandwidth cost, I recommend GZipping
+					any PNG assets you pre-create for use with PngPong - although it normally
+					doesn&#39;t make a difference with PNGs, it will compress the final file size
+				considerably.</p>
+				<h3 id="why-these-restrictions-">Why these restrictions?</h3>
+				<ul>
+					<li><strong>Indexed-color:</strong> to try to reign in the amount of memory PngPong uses. Right now
+						it has to load the entire image into memory in order to edit it, and the data
+					for Truecolor with Alpha (type 6) images take up nearly 4x as much space.</li>
+					<li><strong>Compression level 0:</strong><ul>
+							<li>Because the JS to decompress ZLib is not insigificant.</li>
+							<li>The file has to be uncompressed anyway to edit raw data, and that will mean
+							even more memory usage (compressed file + uncompressed data)</li>
+							<li>Browsers can handle uncompression of anything that we GZip without
+							needing any extra client code, so the bandwidth requirement does not increase.</li>
+						</ul>
+					</li>
+				</ul>
+				<h2 id="how-do-i-use-it-">How do I use it?</h2>
+				<p>You can create a base PNG file using one of two methods.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-enum">
+						<a href="enums/pngcolortype.html" class="tsd-kind-icon">PNGColor<wbr>Type</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/arraybufferwalker.html" class="tsd-kind-icon">Array<wbr>Buffer<wbr>Walker</a>
+					</li>
+					<li class=" tsd-kind-class tsd-is-not-exported">
+						<a href="classes/eventpayloads.html" class="tsd-kind-icon">Event<wbr>Payloads</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/palette.html" class="tsd-kind-icon">Palette</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pngpong.html" class="tsd-kind-icon">Png<wbr>Pong</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pngpongimagecopytransformer.html" class="tsd-kind-icon">Png<wbr>Pong<wbr>Image<wbr>Copy<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/pngpongshapetransformer.html" class="tsd-kind-icon">Png<wbr>Pong<wbr>Shape<wbr>Transformer</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/zlibwriter.html" class="tsd-kind-icon">Zlib<wbr>Writer</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/colormaskoptions.html" class="tsd-kind-icon">Color<wbr>Mask<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/copyoperation.html" class="tsd-kind-icon">Copy<wbr>Operation</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/ihdroptions.html" class="tsd-kind-icon">IHDROptions</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/offsetandlength.html" class="tsd-kind-icon">Offset<wbr>And<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/palettedarray.html" class="tsd-kind-icon">Paletted<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-is-not-exported">
+						<a href="interfaces/rectangledraw.html" class="tsd-kind-icon">Rectangle<wbr>Draw</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#callback" class="tsd-kind-icon">Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#datacallback" class="tsd-kind-icon">Data<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-is-not-exported">
+						<a href="globals.html#eventcallback" class="tsd-kind-icon">Event<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#rgb" class="tsd-kind-icon">RGB</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#rgba" class="tsd-kind-icon">RGBA</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#zlibreadcallback" class="tsd-kind-icon">Zlib<wbr>Read<wbr>Callback</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="globals.html#validbitdepth" class="tsd-kind-icon">valid<wbr>Bit<wbr>Depth</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#block_size" class="tsd-kind-icon">BLOCK_<wbr>SIZE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#ihdrlength" class="tsd-kind-icon">IHDRLength</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#pre_header" class="tsd-kind-icon">PRE_<wbr>HEADER</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#table" class="tsd-kind-icon">TABLE</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#zlib_window_size" class="tsd-kind-icon">ZLIB_<wbr>WINDOW_<wbr>SIZE</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-is-not-exported">
+						<a href="globals.html#identifier" class="tsd-kind-icon">identifier</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="globals.html#length" class="tsd-kind-icon">length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#rgbatopalettedarray" class="tsd-kind-icon">RGBAto<wbr>Paletted<wbr>Array</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#ab2str" class="tsd-kind-icon">ab2str</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#adler32_buf" class="tsd-kind-icon">adler32_<wbr>buf</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#alphablend" class="tsd-kind-icon">alpha<wbr>Blend</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#calculatebufferlength" class="tsd-kind-icon">calculate<wbr>Buffer<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calculateidatlength" class="tsd-kind-icon">calculateIDATLength</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calculatepalettelength" class="tsd-kind-icon">calculate<wbr>Palette<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#calculatezlibbedlength" class="tsd-kind-icon">calculate<wbr>Zlibbed<wbr>Length</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#checkpreheader" class="tsd-kind-icon">check<wbr>Preheader</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#crc32" class="tsd-kind-icon">crc32</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createblankpng" class="tsd-kind-icon">create<wbr>BlankPNG</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createfromrgbarray" class="tsd-kind-icon">create<wbr>FromRGBArray</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#createwithmetadata" class="tsd-kind-icon">create<wbr>With<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#findoraddcolor" class="tsd-kind-icon">find<wbr>OrAdd<wbr>Color</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#findrgba" class="tsd-kind-icon">findRGBA</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#frombase64" class="tsd-kind-icon">from<wbr>Base64</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readihdr" class="tsd-kind-icon">readIHDR</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readpalette" class="tsd-kind-icon">read<wbr>Palette</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#readzlib" class="tsd-kind-icon">read<wbr>Zlib</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#str2ab" class="tsd-kind-icon">str2ab</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#swap16" class="tsd-kind-icon">swap16</a>
+					</li>
+					<li class=" tsd-kind-function tsd-is-not-exported">
+						<a href="globals.html#swap32" class="tsd-kind-icon">swap32</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#tobase64" class="tsd-kind-icon">to<wbr>Base64</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writeidat" class="tsd-kind-icon">writeIDAT</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writeidatconstant" class="tsd-kind-icon">writeIDATConstant</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writeiend" class="tsd-kind-icon">writeIEND</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writeihdr" class="tsd-kind-icon">writeIHDR</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writepalette" class="tsd-kind-icon">write<wbr>Palette</a>
+					</li>
+					<li class=" tsd-kind-function">
+						<a href="globals.html#writepreheader" class="tsd-kind-icon">write<wbr>Preheader</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

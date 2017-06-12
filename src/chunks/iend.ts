@@ -2,7 +2,15 @@ import { ArrayBufferWalker } from '../util/arraybuffer-walker';
 
 const identifier = "IEND";
 
-export function write(walker: ArrayBufferWalker) {
+
+/**
+ * There is no actual content in an IEND chunk, just the identifier
+ * and CRC.
+ * 
+ * @export
+ * @param {ArrayBufferWalker} walker 
+ */
+export function writeIEND(walker: ArrayBufferWalker) {
 
     walker.writeUint32(0);
     walker.startCRC();

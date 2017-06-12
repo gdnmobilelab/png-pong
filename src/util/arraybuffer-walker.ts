@@ -13,11 +13,34 @@ function swap32(val) {
         | ((val >> 24) & 0xFF);
 }
 
+
+/**
+ * A class that "walks" through an ArrayBuffer, either reading or writing
+ * values as it goes. Intended as a less performance-draining alternative
+ * to a DataView.
+ * 
+ * @export
+ * @class ArrayBufferWalker
+ */
 export class ArrayBufferWalker {
 
+
+    /**
+     * The current index our walker is sat at. Can be modified.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     offset = 0;
     array: Uint8Array;
 
+
+    /**
+     * Creates an instance of ArrayBufferWalker.
+     * @param {(ArrayBuffer | number)} bufferOrLength - either an existing ArrayBuffer
+     * or the length of a new array you want to use.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     constructor(private bufferOrLength: ArrayBuffer | number) {
         if (bufferOrLength instanceof ArrayBuffer) {
             this.array = new Uint8Array(bufferOrLength);
@@ -89,6 +112,14 @@ export class ArrayBufferWalker {
 
     }
 
+
+    /**
+     * Move around the array without writing or reading a value.
+     * 
+     * @param {any} length 
+     * 
+     * @memberof ArrayBufferWalker
+     */
     skip(length) {
         this.offset += length;
     }
@@ -102,7 +133,14 @@ export class ArrayBufferWalker {
         this.offset -= length;
     }
 
-    crcStartOffset?: number
+    private crcStartOffset?: number
+
+
+    /**
+     * Mark the beginning of an area we want to calculate the CRC for.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     startCRC() {
         if (this.crcStartOffset) {
             throw new Error("CRC already started")
@@ -111,6 +149,12 @@ export class ArrayBufferWalker {
     }
 
 
+    /**
+     * After using .startCRC() to mark the start of a block, use this to mark the
+     * end of the block and write the UInt32 CRC value.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     writeCRC() {
         if (this.crcStartOffset === undefined) {
             throw new Error("CRC has not been started, cannot write");
@@ -123,8 +167,16 @@ export class ArrayBufferWalker {
 
     }
 
-    adlerStartOffset?: number;
-    savedAdlerValue?: number;
+    private adlerStartOffset?: number;
+    private savedAdlerValue?: number;
+
+
+    /**
+     * Similar to .startCRC(), this marks the start of a block we want to calculate the
+     * ADLER32 checksum of.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     startAdler() {
         if (this.adlerStartOffset) {
             throw new Error("Adler already started")
@@ -132,6 +184,13 @@ export class ArrayBufferWalker {
         this.adlerStartOffset = this.offset;
     }
 
+
+    /**
+     * ADLER32 is used in our ZLib blocks, but can span across multiple blocks. So sometimes
+     * we need to pause it in order to start a new block.
+     * 
+     * @memberof ArrayBufferWalker
+     */
     pauseAdler() {
         if (this.adlerStartOffset === undefined) {
             throw new Error("Adler has not been started, cannot pause");
@@ -140,6 +199,15 @@ export class ArrayBufferWalker {
         this.adlerStartOffset = undefined;
     }
 
+
+    /**
+     * Similar to .writeCRC(), this marks the end of an ADLER32 checksummed block, and
+     * writes the Uint32 checksum value to the ArrayBuffer.
+     * 
+     * @returns 
+     * 
+     * @memberof ArrayBufferWalker
+     */
     writeAdler() {
         if (this.adlerStartOffset === undefined && this.savedAdlerValue === undefined) {
             throw new Error("CRC has not been started, cannot write");

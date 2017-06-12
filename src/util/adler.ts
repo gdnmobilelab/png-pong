@@ -1,3 +1,16 @@
+
+
+/**
+ * Calculate the ADLER32 checksum of a section of a buffer. Code largely taken from:
+ * https://github.com/SheetJS/js-adler32
+ * 
+ * @export
+ * @param {(Uint8Array | Uint8ClampedArray)} buf 
+ * @param {number} offset 
+ * @param {number} length 
+ * @param {number} [seed] 
+ * @returns 
+ */
 export function adler32_buf(buf: Uint8Array | Uint8ClampedArray, offset: number, length: number, seed?: number) {
     var a = 1, b = 0, L = offset + length, M = 0;
     if (typeof seed === 'number') { a = seed & 0xFFFF; b = (seed >>> 16) & 0xFFFF; }

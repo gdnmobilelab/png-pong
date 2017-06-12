@@ -14,7 +14,7 @@ describe("Shape transformer", () => {
         shape.drawRect(10, 10, 20, 20, [255, 0, 0]);
         shape.drawRect(10, 160, 10, 10, [255, 0, 0]);
 
-        transformer.transform();
+        transformer.run();
 
         let arr = new Uint8Array(png);
         let buff = new Buffer(arr);

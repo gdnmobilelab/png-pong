@@ -5,6 +5,16 @@ import { DataCallback } from './data-callback';
 export const ZLIB_WINDOW_SIZE = 1024 * 32; // 32KB
 export const BLOCK_SIZE = 65535;
 
+
+
+/**
+ * Zlibbed data takes up more space than the raw data itself - we aren't
+ * compressing it but we do need to add block headers and the like.
+ * 
+ * @export
+ * @param {number} dataLength 
+ * @returns 
+ */
 export function calculateZlibbedLength(dataLength: number) {
 
     let numberOfBlocks = Math.ceil(dataLength / BLOCK_SIZE);
@@ -16,18 +26,15 @@ export function calculateZlibbedLength(dataLength: number) {
         + dataLength;                       // The actual data.
 };
 
-// export function calculateUnZlibbedLength(zlibLength:number) {
 
-//     let numberOfBlocks = Math.ceil(zlibLength / BLOCK_SIZE);
-
-//     return zlibLength
-//         - 1
-//         - 1
-//         - (5 * numberOfBlocks)
-//         - 4;
-// }
-
-
+/**
+ * Our tool for writing IDAT chunks. Although Zlib is used for compression,
+ * we aren't compressing anything here. Basically, this writes a Zlib chunk
+ * as if it is set to a compression level of 0.
+ * 
+ * @export
+ * @class ZlibWriter
+ */
 export class ZlibWriter {
 
     bytesLeftInWindow = 0;
@@ -112,6 +119,16 @@ export class ZlibWriter {
 
 export type ZlibReadCallback = (array: Uint8Array, readOffset: number, dataOffset: number, length: number) => void;
 
+
+/**
+ * Utility function to parse out a Zlib-encoded block (at a compression level of 0 only). Will
+ * skip over Zlib headers and block markers, and call the dataCallback repeatedly when actual
+ * data is available.
+ * 
+ * @export
+ * @param {ArrayBufferWalker} walker 
+ * @param {ZlibReadCallback} dataCallback 
+ */
 export function readZlib(walker: ArrayBufferWalker, dataCallback: ZlibReadCallback) {
 
     // Disregard Zlib header

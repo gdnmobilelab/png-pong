@@ -1,7 +1,16 @@
 import { ArrayBufferWalker } from '../util/arraybuffer-walker';
 import { crc32 } from '../util/crc';
+import { RGBA, RGB } from '../util/color-types';
 
-export function write(walker: ArrayBufferWalker, rgbPalette: Uint8ClampedArray, alphaPalette: Uint8ClampedArray) {
+/**
+ * Write both the PLTE and tRNS chunks of the PNG file.
+ * 
+ * @export
+ * @param {ArrayBufferWalker} walker 
+ * @param {Uint8ClampedArray} rgbPalette 
+ * @param {Uint8ClampedArray} alphaPalette 
+ */
+export function writePalette(walker: ArrayBufferWalker, rgbPalette: Uint8ClampedArray, alphaPalette: Uint8ClampedArray) {
 
     // Write PTLE
 
@@ -29,13 +38,28 @@ export function write(walker: ArrayBufferWalker, rgbPalette: Uint8ClampedArray, 
 
 }
 
+
+/**
+ * Testing showed that creating new UInt8Arrays was an expensive process, so instead
+ * of slicing the array to mark the PLTE and tRNS arrays, we instead store their
+ * offset and length.
+ * 
+ * @export
+ * @interface OffsetAndLength
+ */
 export interface OffsetAndLength {
     offset: number;
     length: number;
 }
 
-export class Palette {
 
+/**
+ * A manager that handles both the PLTE and tRNS chunks, as they depend upon each other.
+ * 
+ * @export
+ * @class Palette
+ */
+export class Palette {
 
     constructor(private walker: ArrayBufferWalker, private rgbPalette: OffsetAndLength, private alphaPalette?: OffsetAndLength) {
 
@@ -68,6 +92,17 @@ export class Palette {
         }
     }
 
+
+    /**
+     * Return the RGBA color at the index provided. If there is no tRNS chunk the
+     * color will always have an alpha value of 255.
+     * 
+     * @param {number} idx 
+     * @returns The RGBA color at this index. If the color hasn't been specified it
+     * will come back as [0,0,0,255].
+     * 
+     * @memberof Palette
+     */
     getColorAtIndex(idx: number) {
 
         let rgbStartingIndex = idx * 3;
@@ -83,10 +118,20 @@ export class Palette {
             rgba[3] = this.walker.array[this.alphaPalette.offset + idx];
         }
 
-        return rgba;
+        return rgba as RGBA;
     }
 
-    getColorIndex(rgba: number[], startingIndex: number = 0) {
+
+    /**
+     * Get the palette index for an existing color.
+     * 
+     * @param {RGBA} rgba 
+     * @param {number} [startingIndex=0] - used internally to skip the first palette entry, which is always rgba(0,0,0,0)
+     * @returns The index of the color, or -1 if the color has not yet been added to the palette.
+     * 
+     * @memberof Palette
+     */
+    getColorIndex(rgba: RGBA | RGB, startingIndex: number = 0) {
 
         this.checkColor(rgba);
 
@@ -113,7 +158,16 @@ export class Palette {
         return -1;
     }
 
-    addColor(rgba: number[]) {
+
+    /**
+     * Add a color to the palette. Must be an RGBA color, even if we're not using tRNS (to do: fix that)
+     * 
+     * @param {RGBA} rgba 
+     * @returns the index the color was added at.
+     * 
+     * @memberof Palette
+     */
+    addColor(rgba: RGBA | RGB) {
 
         // need to save this to reset later.
         let currentWalkerOffset = this.walker.offset;
@@ -155,7 +209,16 @@ export class Palette {
 
 }
 
-export function read(walker: ArrayBufferWalker, length: number) {
+/**
+ * Take an ArrayWalker and parse out the PLTE chunk and, if it exists, the tRNS chunk.
+ * If it exists, the tRNS chunk MUST immediately follow the PLTE chunk.
+ * 
+ * @export
+ * @param {ArrayBufferWalker} walker 
+ * @param {number} length 
+ * @returns 
+ */
+export function readPalette(walker: ArrayBufferWalker, length: number) {
 
     let rgbPaletteBounds = { offset: walker.offset, length: length };
 
@@ -186,7 +249,15 @@ export function read(walker: ArrayBufferWalker, length: number) {
 
 }
 
-export function calculateLength(numColors: number) {
+/**
+ * PNG files can have palettes of varying sizes, up to 256 colors. If we want
+ * to try to save some space, we can use a smaller palette.
+ * 
+ * @export
+ * @param {number} numColors 
+ * @returns 
+ */
+export function calculatePaletteLength(numColors: number) {
     return (numColors * 3) // PLTE chunk size
         + 4     // PLTE identifier
         + 4     // PLTE CRC

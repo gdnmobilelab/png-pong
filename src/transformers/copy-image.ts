@@ -1,4 +1,5 @@
 import { PngPong, Palette } from '../'
+import { RGB } from '../util/color-types';
 
 interface CopyOperation {
     sourceX: number;
@@ -11,14 +12,22 @@ interface CopyOperation {
     mask?: ColorMaskOptions;
 }
 
+
+/**
+ * If you want to replace all of the RGB values in the source image with
+ * a mask color and just use alpha values, you must provide both the
+ * color you want to draw and the background color you want to multiply
+ * the alpha with.
+ * 
+ * @export
+ * @interface ColorMaskOptions
+ */
 export interface ColorMaskOptions {
-    maskColor: RGBColor;
-    backgroundColor: RGBColor;
+    maskColor: RGB;
+    backgroundColor: RGB;
 }
 
-export type RGBColor = [number, number, number];
-
-function alphaBlend(color1: RGBColor, color2: RGBColor, alpha: number) {
+function alphaBlend(color1: RGB, color2: RGB, alpha: number) {
 
     let alphaMultiply = alpha / 255;
 
@@ -36,16 +45,46 @@ function alphaBlend(color1: RGBColor, color2: RGBColor, alpha: number) {
 
 }
 
-export class PngPongImageCopier {
+
+/**
+ * A transformer to copy one or more sections of an image onto another.
+ * 
+ * @export
+ * @class PngPongImageCopyTransformer
+ */
+export class PngPongImageCopyTransformer {
 
     private operations: CopyOperation[] = [];
 
+
+    /**
+     * Creates an instance of PngPongImageCopyTransformer.
+     * @param {ArrayBuffer} sourceImage - the source PNG ArrayBuffer to read from. Must be
+     * a PngPong suitable PNG.
+     * @param {PngPong} targetTransformer - the transformer to add this image to.
+     * 
+     * @memberof PngPongImageCopyTransformer
+     */
     constructor(private sourceImage: ArrayBuffer, private targetTransformer: PngPong) {
         this.targetTransformer.onPalette(this.onPalette.bind(this));
         this.targetTransformer.onData(this.onData.bind(this));
     }
 
 
+    /**
+     * Add a copy operation to the transformer. Must be done before running PngPong.run().
+     * 
+     * @param {number} sourceX 
+     * @param {number} sourceY 
+     * @param {number} sourceWidth 
+     * @param {number} sourceHeight 
+     * @param {number} targetX 
+     * @param {number} targetY 
+     * @param {ColorMaskOptions} [mask] - Optional argument to ignore the RGB value of the source image
+     * and instead apply a color mask.
+     * 
+     * @memberof PngPongImageCopyTransformer
+     */
     copy(sourceX: number, sourceY: number, sourceWidth: number, sourceHeight: number, targetX: number, targetY: number, mask?: ColorMaskOptions) {
 
         let pixelsRequired = sourceWidth * sourceHeight;
@@ -64,7 +103,7 @@ export class PngPongImageCopier {
         });
     }
 
-    onPalette(targetPalette: Palette) {
+    private onPalette(targetPalette: Palette) {
 
         // We need to grab our source image and add the new colors to the palette. At the same time
         // we record the new data arrays, to insert into the data later.
@@ -119,11 +158,11 @@ export class PngPongImageCopier {
 
         })
 
-        sourceTransformer.transform();
+        sourceTransformer.run();
 
     }
 
-    onData(array: Uint8Array, readOffset: number, x: number, y: number, length: number) {
+    private onData(array: Uint8Array, readOffset: number, x: number, y: number, length: number) {
 
         for (let i = 0; i < length; i++) {
 

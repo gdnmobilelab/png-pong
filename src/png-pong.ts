@@ -1,11 +1,11 @@
 import { ArrayBufferWalker } from './util/arraybuffer-walker';
-import { check as checkPreheader } from './chunks/pre-header';
-import { read as readIHDR, IHDROptions } from './chunks/ihdr';
-import { read as readPalette, Palette } from './chunks/palette';
+import { checkPreheader as checkPreheader } from './chunks/pre-header';
+import { readIHDR as readIHDR, IHDROptions } from './chunks/ihdr';
+import { readPalette as readPalette, Palette } from './chunks/palette';
 import { DataCallback } from './util/data-callback';
 import { readZlib } from './util/zlib';
 
-export class EventPayloads {
+class EventPayloads {
     header: IHDROptions
     palette: Palette
     data: DataCallback
@@ -13,24 +13,40 @@ export class EventPayloads {
 
 export type Callback<T> = (arg: T) => void;
 
-export type EventCallback<K extends keyof EventPayloads> = (arg: EventPayloads[K]) => void
+type EventCallback<K extends keyof EventPayloads> = (arg: EventPayloads[K]) => void
 
+
+/**
+ * The core class for any image manipulation. Create an instance of this class
+ * with the ArrayBuffer of your original PNG image, then apply your transforms
+ * to it. Then execute PngPng.run() to apply those transforms.
+ * 
+ * @export
+ * @class PngPong
+ */
 export class PngPong {
 
-    walker: ArrayBufferWalker;
+    private walker: ArrayBufferWalker;
 
-    headerListeners: Callback<IHDROptions>[] = [];
-    paletteListeners: Callback<Palette>[] = [];
-    dataListeners: DataCallback[] = [];
+    private headerListeners: Callback<IHDROptions>[] = [];
+    private paletteListeners: Callback<Palette>[] = [];
+    private dataListeners: DataCallback[] = [];
 
-    // height:number;
-    width: number;
+    private width: number;
 
+
+    /**
+     * Creates an instance of PngPong.
+     * @param {ArrayBuffer} source: The ArrayBuffer you want to apply
+     * transforms to.
+     * 
+     * @memberof PngPong
+     */
     constructor(private source: ArrayBuffer) {
         this.walker = new ArrayBufferWalker(source);
     }
 
-    readData(dataLength: number) {
+    private readData(dataLength: number) {
 
         // Need to include the chunk identifier in the CRC. Need a better
         // way to do this.
@@ -94,7 +110,7 @@ export class PngPong {
 
     }
 
-    readChunk() {
+    private readChunk() {
         let length = this.walker.readUint32();
         let identifier = this.walker.readString(4);
 
@@ -131,22 +147,55 @@ export class PngPong {
     }
 
 
-    transform() {
+
+    /**
+     * Apply the transforms you've created to the original ArrayBuffer.
+     * 
+     * @memberof PngPong
+     */
+    run() {
         checkPreheader(this.walker);
         this.readChunk();
-        return this.source;
-        // console.log(readIHDR(this.walker))
     }
 
 
+    /**
+     * Add a callback to be run when the IHDR chunk of the PNG file has been
+     * successfully read. You cannot edit the contents of the IHDR, but can
+     * read values out of it.
+     * 
+     * @param {Callback<IHDROptions>} listener 
+     * 
+     * @memberof PngPong
+     */
     onHeader(listener: Callback<IHDROptions>) {
         this.headerListeners.push(listener);
     }
 
+
+    /**
+     * Add a callback when the image palette has been processed. During this
+     * callback you are able to add colors to the palette. If you save the
+     * palette variable outside of the callback, you can also use it to later
+     * get the index of palette colors while processing data.
+     * 
+     * @param {Callback<Palette>} listener 
+     * 
+     * @memberof PngPong
+     */
     onPalette(listener: Callback<Palette>) {
         this.paletteListeners.push(listener)
     }
 
+
+    /**
+     * Add a callback that will be run multiple times as PngPong runs through
+     * the image data.
+     * 
+     * @param {DataCallback} listener 
+     * 
+     * @memberof PngPong
+     */
     onData(listener: DataCallback) {
         this.dataListeners.push(listener)
     }

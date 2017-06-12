@@ -12,16 +12,19 @@
     "base64-js": "^1.2.0",
     "expect": "^1.20.2",
     "html-webpack-plugin": "^2.28.0",
+    "jsdoc": "^3.4.3",
     "mocha": "^3.3.0",
     "mocha-typescript": "^1.1.0",
     "pngjs": "^3.2.0",
     "ts-loader": "^2.0.3",
+    "typedoc": "^0.7.1",
     "typescript": "^2.3.1",
     "webpack": "^2.4.1",
     "webpack-dev-server": "^2.4.5"
   },
   "scripts": {
     "tests-node": "mocha-typescript-watch -o mocha.opts",
-    "demo": "webpack-dev-server './demo/demo.ts' --module-bind ts=ts-loader --output-filename test.js --plugin html-webpack-plugin --resolve-extensions '.js,.ts,.json' --no-inline --devtool source-map"
+    "demo": "webpack-dev-server './demo/demo.ts' --module-bind ts=ts-loader --output-filename test.js --plugin html-webpack-plugin --resolve-extensions '.js,.ts,.json' --no-inline --devtool source-map",
+    "generate-docs": "typedoc --out docs --mode file --excludeExternals --excludePrivate --exclude 'test/**' ./src/index.ts"
   }
 }

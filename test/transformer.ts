@@ -19,7 +19,7 @@ describe("PNG Transformer", () => {
             done();
         })
 
-        transformer.transform();
+        transformer.run();
 
     });
     it("should successfully parse a PNG palette", (done) => {
@@ -34,7 +34,7 @@ describe("PNG Transformer", () => {
             done();
         })
 
-        transformer.transform();
+        transformer.run();
 
     })
 
@@ -53,7 +53,7 @@ describe("PNG Transformer", () => {
             done();
         })
 
-        transformer.transform();
+        transformer.run();
 
     })
 
@@ -71,7 +71,7 @@ describe("PNG Transformer", () => {
             }
         })
 
-        transformer.transform();
+        transformer.run();
 
     })
 
@@ -92,7 +92,7 @@ describe("PNG Transformer", () => {
             }
         })
 
-        transformer.transform();
+        transformer.run();
 
         let asBuffer = new Buffer(new Uint8Array(source));
 
