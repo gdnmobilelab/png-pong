@@ -119,6 +119,22 @@ else that will result in an invalid PNG file.
 Also, while the data callback will usually start with an X of zero, it won't
 always. So be sure you are calculating the correct start position.
 
+## Running tests/demos
+
+To spin up a server showing you the demo page at demo/demo.ts just run:
+
+    npm run demo
+
+And go to http://localhost:8080. To run the test suite in Node, run
+
+    npm run tests-node
+
+, and in the browser:
+
+    npm run tests-web
+
+And go to http://localhost:8080 again.
+
 ## What's next
 
 Loading the ArrayBuffer of an entire image is still very memory intensive. I'm
