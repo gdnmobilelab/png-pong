@@ -1,14 +1,14 @@
-import { PngPongTransformer, PngPongShapeTransformer } from '../../src';
+import { PngPong, PngPongShapeTransformer } from '../../src';
 import { createBlankPNG } from '../util/blank-png';
 import { PNG } from 'pngjs';
 import * as expect from 'expect';
 
 describe("Shape transformer", () => {
-    it.only("should draw a rectangle", (done) => {
+    it("should draw a rectangle", (done) => {
 
         let png = createBlankPNG(400, 200, [255, 255, 255, 255], 1);
 
-        let transformer = new PngPongTransformer(png);
+        let transformer = new PngPong(png);
 
         let shape = new PngPongShapeTransformer(transformer);
         shape.drawRect(10, 10, 20, 20, [255, 0, 0]);

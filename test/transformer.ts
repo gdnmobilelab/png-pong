@@ -1,4 +1,4 @@
-import { PngPongTransformer } from '../src/transformer';
+import { PngPong } from '../src';
 import { createBlankPNG } from './util/blank-png';
 import { PNGColorType } from '../src/chunks/ihdr';
 import * as expect from 'expect';
@@ -9,7 +9,7 @@ describe("PNG Transformer", () => {
 
         let source = createBlankPNG(200, 200, [255, 0, 0]);
 
-        let transformer = new PngPongTransformer(source);
+        let transformer = new PngPong(source);
 
         transformer.onHeader((header) => {
             expect(header.width).toEqual(200);
@@ -26,7 +26,7 @@ describe("PNG Transformer", () => {
 
         let source = createBlankPNG(200, 200, [255, 0, 0, 100]);
 
-        let transformer = new PngPongTransformer(source);
+        let transformer = new PngPong(source);
 
         transformer.onPalette((palette) => {
             let getIndex = palette.getColorIndex([255, 0, 0, 100]);
@@ -42,7 +42,7 @@ describe("PNG Transformer", () => {
 
         let source = createBlankPNG(200, 200, [255, 0, 0, 100], 1);
 
-        let transformer = new PngPongTransformer(source);
+        let transformer = new PngPong(source);
 
         transformer.onPalette((palette) => {
             let newIndex = palette.addColor([0, 255, 0]);
@@ -61,7 +61,7 @@ describe("PNG Transformer", () => {
 
         let source = createBlankPNG(200, 200, [255, 0, 0, 100]);
 
-        let transformer = new PngPongTransformer(source);
+        let transformer = new PngPong(source);
 
         let numRowsEmitted = 0;
         transformer.onData((array, readOffset, dataOffset, length) => {
@@ -79,7 +79,7 @@ describe("PNG Transformer", () => {
 
         let source = createBlankPNG(20, 20, [255, 0, 0], 1);
 
-        let transformer = new PngPongTransformer(source);
+        let transformer = new PngPong(source);
 
         let colorIndex = -1;
         transformer.onPalette((palette) => {

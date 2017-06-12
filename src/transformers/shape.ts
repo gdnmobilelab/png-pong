@@ -1,4 +1,4 @@
-import { PngPongTransformer, Palette } from '../';
+import { PngPong, Palette } from '../';
 import { RGB } from '../util/color-types';
 
 interface RectangleDraw {
@@ -15,7 +15,7 @@ export class PngPongShapeTransformer {
     private operationPaletteIndexes: number[] = [];
     private imageWidth: number;
 
-    constructor(private baseTransformer: PngPongTransformer) {
+    constructor(private baseTransformer: PngPong) {
 
         baseTransformer.onHeader((h) => {
             this.imageWidth = h.width;

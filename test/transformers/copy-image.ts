@@ -1,4 +1,4 @@
-import { PngPongTransformer, PngPongImageCopier } from '../../src';
+import { PngPong, PngPongImageCopier } from '../../src';
 import { createBlankPNG } from '../util/blank-png';
 import { PNG } from 'pngjs';
 import * as expect from 'expect';
@@ -10,7 +10,7 @@ describe("Image Copier", () => {
         let sourcePNG = createBlankPNG(20, 20, [255, 0, 0]);
         let targetPNG = createBlankPNG(60, 60, [255, 255, 255], 1);
 
-        let transformer = new PngPongTransformer(targetPNG);
+        let transformer = new PngPong(targetPNG);
         let imageCopier = new PngPongImageCopier(sourcePNG, transformer);
 
         imageCopier.copy(5, 5, 15, 15, 10, 10);

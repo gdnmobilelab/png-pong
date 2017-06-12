@@ -15,7 +15,7 @@ export type Callback<T> = (arg: T) => void;
 
 export type EventCallback<K extends keyof EventPayloads> = (arg: EventPayloads[K]) => void
 
-export class PngPongTransformer {
+export class PngPong {
 
     walker: ArrayBufferWalker;
 
