@@ -4,7 +4,7 @@ An image manipulation library with a very specific set of skills.
 
 ## What is it?
 
-PngPong is a very, very basic replacement for the `<canvas>` tag in elements
+PngPong is a very, very basic replacement for the Canvas API in environments
 that do not support it - primarily, service workers. Instead, it manually
 manipulates the bytes of a PNG file to copy the contents of another image, or
 draw basic shapes (currently only rectangles).
