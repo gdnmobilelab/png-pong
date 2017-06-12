@@ -1,4 +1,4 @@
-import { PngPongTransformer, Palette } from '../'
+import { PngPong, Palette } from '../'
 
 interface CopyOperation {
     sourceX: number;
@@ -40,7 +40,7 @@ export class PngPongImageCopier {
 
     private operations: CopyOperation[] = [];
 
-    constructor(private sourceImage: ArrayBuffer, private targetTransformer: PngPongTransformer) {
+    constructor(private sourceImage: ArrayBuffer, private targetTransformer: PngPong) {
         this.targetTransformer.onPalette(this.onPalette.bind(this));
         this.targetTransformer.onData(this.onData.bind(this));
     }
@@ -69,7 +69,7 @@ export class PngPongImageCopier {
         // We need to grab our source image and add the new colors to the palette. At the same time
         // we record the new data arrays, to insert into the data later.
 
-        let sourceTransformer = new PngPongTransformer(this.sourceImage);
+        let sourceTransformer = new PngPong(this.sourceImage);
 
         // grab the palette to do lookups
         let sourcePalette: Palette;

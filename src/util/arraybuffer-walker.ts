@@ -15,7 +15,7 @@ function swap32(val) {
 
 export class ArrayBufferWalker {
 
-    protected _offset = 0;
+    protected _offset: number;
     array: Uint8Array;
 
     public get offset() {
@@ -30,12 +30,22 @@ export class ArrayBufferWalker {
         return this._offset++;
     }
 
-    constructor(private buffer: ArrayBuffer | Uint8Array) {
+    length: number;
+
+    constructor(private buffer: ArrayBuffer | Uint8Array, offset = 0, length = -1) {
         if (buffer instanceof Uint8Array) {
             this.array = buffer;
         } else {
             this.array = new Uint8Array(buffer);
         }
+
+        if (length > -1) {
+            this.length = length;
+        } else {
+            this.length = this.array.length;
+        }
+
+        this._offset = offset;
     }
 
     writeUint32(value, littleEndian = false) {

@@ -4,49 +4,48 @@ import * as expect from 'expect';
 
 describe("Multi array walker", () => {
     it("Should walk across one arrays", () => {
-        let ab = new ArrayBuffer(2);
+        let ab = new Uint8Array(2);
 
-        let walker = new MultiArrayBufferWalker([ab]);
+        let walker = new MultiArrayBufferWalker(ab);
 
         walker.writeUint8(1);
         walker.writeUint8(2);
 
-        let arr = new Uint8Array(ab);
 
-        expect(arr[0]).toEqual(1);
-        expect(arr[1]).toEqual(2);
+        expect(ab[0]).toEqual(1);
+        expect(ab[1]).toEqual(2);
 
 
     });
 
     it("Should walk across two arrays", () => {
-        let ab = new ArrayBuffer(2);
-        let ab2 = new ArrayBuffer(2);
+        let ab = new Uint8Array(2);
+        let ab2 = new Uint8Array(2);
 
-        let walker = new MultiArrayBufferWalker([ab, ab2]);
+        let walker = new MultiArrayBufferWalker(ab);
+        walker.add(ab2);
 
         walker.writeUint8(1);
         walker.writeUint8(2);
         walker.writeUint8(3);
         walker.writeUint8(4);
 
-        let arr = new Uint8Array(ab);
-        let arr2 = new Uint8Array(ab2);
 
-        expect(arr[0]).toEqual(1);
-        expect(arr[1]).toEqual(2);
-        expect(arr2[0]).toEqual(3);
-        expect(arr2[1]).toEqual(4);
+        expect(ab[0]).toEqual(1);
+        expect(ab[1]).toEqual(2);
+        expect(ab2[0]).toEqual(3);
+        expect(ab2[1]).toEqual(4);
 
         expect(walker.offset).toEqual(4);
 
     })
 
     it("Should read across two arrays", () => {
-        let ab = new ArrayBuffer(2);
-        let ab2 = new ArrayBuffer(2);
+        let ab = new Uint8Array(2);
+        let ab2 = new Uint8Array(2);
 
-        let walker = new MultiArrayBufferWalker([ab, ab2]);
+        let walker = new MultiArrayBufferWalker(ab);
+        walker.add(ab2);
 
         walker.writeUint32(5000);
 
@@ -58,11 +57,12 @@ describe("Multi array walker", () => {
     })
 
     it("Should write CRC across two arrays", () => {
-        let ab = new ArrayBuffer(5);
-        let ab2 = new ArrayBuffer(5);
-        let ab3 = new ArrayBuffer(10);
+        let ab = new Uint8Array(5);
+        let ab2 = new Uint8Array(5);
+        let ab3 = new Uint8Array(10);
 
-        let walker = new MultiArrayBufferWalker([ab, ab2]);
+        let walker = new MultiArrayBufferWalker(ab);
+        walker.add(ab2);
         let singleWalker = new ArrayBufferWalker(ab3);
 
         walker.startCRC();
@@ -84,11 +84,12 @@ describe("Multi array walker", () => {
     });
 
     it("Should write Adler across two arrays", () => {
-        let ab = new ArrayBuffer(5);
-        let ab2 = new ArrayBuffer(5);
-        let ab3 = new ArrayBuffer(10);
+        let ab = new Uint8Array(5);
+        let ab2 = new Uint8Array(5);
+        let ab3 = new Uint8Array(10);
 
-        let walker = new MultiArrayBufferWalker([ab, ab2]);
+        let walker = new MultiArrayBufferWalker(ab);
+        walker.add(ab2);
         let singleWalker = new ArrayBufferWalker(ab3);
 
         walker.startAdler();

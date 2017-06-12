@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { ZlibWriter, calculateZlibbedLength, readZlib } from '../../src/util/zlib';
 import { ArrayBufferWalker } from '../../src/util/arraybuffer-walker';
 import * as expect from 'expect';
-import { nodeOnly } from '../test-util/node-only';
+import { nodeOnly } from '../test-util/platform';
 
 describe("Zlib writer", () => {
     nodeOnly("Should output a buffer readable by the Node ZLib library", () => {

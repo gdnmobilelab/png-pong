@@ -1,5 +1,5 @@
 import { createFromRGBArray, createWithMetadata } from '../src/writer';
-import { nodeOnly } from './test-util/node-only';
+import { nodeOnly } from './test-util/platform';
 
 describe("PNG Writer", () => {
     nodeOnly("Should write a valid PNG file from RGBA array", (done) => {

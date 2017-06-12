@@ -1,15 +1,24 @@
 import { ArrayBufferWalker } from './arraybuffer-walker';
 
+interface Segment {
+    array: Uint8Array,
+    offset: number,
+    length: number
+}
+
 export class MultiArrayBufferWalker extends ArrayBufferWalker {
 
-    allBufferArrays: Uint8Array[];
-    currentArrayIndex: number;
+    private allSegments: Segment[] = [];
+    private currentSegment: Segment;
+
+    // allBufferArrays: Uint8Array[];
+    currentSegmentIndex: number;
 
     public get offset() {
 
         let offsetValue = this._offset;
-        for (let i = 0; i < this.currentArrayIndex; i++) {
-            offsetValue += this.allBufferArrays[i].length;
+        for (let i = 0; i < this.currentSegmentIndex; i++) {
+            offsetValue += this.allSegments[i].length;
         }
         return offsetValue;
 
@@ -18,36 +27,53 @@ export class MultiArrayBufferWalker extends ArrayBufferWalker {
     public set offset(value) {
 
         let arrayIndex = 0;
-        let currentArray = this.allBufferArrays[0];
-        let currentArrayIndex = 0;
+        console.log(this)
+        let currentSegment = this.allSegments[0];
+        let currentSegmentIndex = 0;
 
-        while (value > currentArray.length) {
-            value -= currentArray.length;
-            currentArrayIndex++;
-            currentArray = this.allBufferArrays[currentArrayIndex];
+        while (value > currentSegment.length) {
+            value -= currentSegment.length;
+            currentSegmentIndex++;
+            currentSegment = this.allSegments[currentSegmentIndex];
         }
 
         this._offset = value;
-        this.currentArrayIndex = currentArrayIndex;
-        this.array = currentArray;
+        this.currentSegmentIndex = currentSegmentIndex;
+        this.array = currentSegment.array;
+        this.currentSegment = currentSegment;
+    }
+
+    constructor(array: Uint8Array, offset = 0, length = -1) {
+
+        super(array, offset, length);
+        console.log("HELLO", this.allSegments)
+        this.add(array)
+        this.currentSegmentIndex = 0;
 
     }
 
-    constructor(buffers: ArrayBuffer[]) {
+    add(array: Uint8Array, offset = 0, length = -1) {
 
-        let arrays = buffers.map((b) => new Uint8Array(b));
-        super(arrays[0]);
-        this.allBufferArrays = arrays;
-        this.currentArrayIndex = 0;
+        let segment = {
+            array: array,
+            offset: offset,
+            length: length === -1 ? array.length : length
+        };
+
+        this.allSegments.push(segment);
+        if (!this.currentSegment) {
+            this.currentSegment = segment;
+        }
     }
 
     protected advanceOffset() {
 
         let toReturn = this._offset++;
 
-        if (this._offset >= this.array.length) {
-            this.currentArrayIndex++;
-            this.array = this.allBufferArrays[this.currentArrayIndex];
+        if (this._offset >= this.currentSegment.length) {
+            this.currentSegmentIndex++;
+            this.currentSegment = this.allSegments[this.currentSegmentIndex];
+            this.array = this.currentSegment.array;
             this._offset = 0;
         }
 

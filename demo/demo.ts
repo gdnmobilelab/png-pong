@@ -1,5 +1,5 @@
 import { PngPongWriter } from '../src/writer';
-import { PngPongTransformer } from '../src/transformer';
+import { PngPong } from '../src/transformer';
 import * as base64 from 'base64-js';
 
 let width = 300;
@@ -44,7 +44,7 @@ img.src = "data:image/png;base64," + b64;
 document.body.appendChild(img);
 
 
-let transformer = new PngPongTransformer(buffer);
+let transformer = new PngPong(buffer);
 
 let colorIndex = -1;
 
