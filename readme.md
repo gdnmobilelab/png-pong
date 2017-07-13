@@ -1,6 +1,6 @@
 # PngPong
 
-An image manipulation library with a very specific set of skills.
+An image manipulation library with a very specific set of skills. Take a look at [a writeup of how we used it](https://medium.com/the-guardian-mobile-innovation-lab/generating-images-in-javascript-without-using-the-canvas-api-77f3f4355fad).
 
 ## What is it?
 
